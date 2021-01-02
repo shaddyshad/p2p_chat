@@ -22,7 +22,7 @@ type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync 
 
 // a message that can be exchanged between peers 
 #[derive(Debug, Serialize, Deserialize)]
-struct Message {
+pub struct Message {
     id: Uuid,
     msg: String,
     source: String,
@@ -83,7 +83,8 @@ pub struct Peer {
     pub name: String,
     messages: Vec<Message>,
     swarm: Swarm<ChatBehavior>,
-    addr: Multiaddr
+    addr: Multiaddr,
+    pub receiver: mpsc::UnboundedReceiver<Message>
 }
 
 
@@ -132,7 +133,8 @@ impl Peer {
             name: name.to_string(),
             messages: vec![],
             swarm,
-            addr: "/ip4/0.0.0.0/tcp/0".parse().expect("can parse address to multiaddress")
+            addr: "/ip4/0.0.0.0/tcp/0".parse().expect("can parse address to multiaddress"),
+            receiver
         }
     }
 
@@ -165,6 +167,7 @@ impl Peer {
     pub fn get_id(&self) -> PeerId {
         self.peer_id.clone()
     }
+
 
 
 }
