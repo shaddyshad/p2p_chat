@@ -35,7 +35,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     "q" => break,
                     cmd if line.starts_with("create t") => handle_create_topic(cmd, &mut peer),
                     _ if line.starts_with("ls t") => handle_list_topics(&peer),
+                    _ if line.starts_with("ls m") => handle_list_messages(&peer),
                     cmd if line.starts_with("join t") => handle_join_topic(cmd, &mut peer),
+                    cmd if line.starts_with("create m") => handle_create_message(cmd, &mut peer),
                     _ => error!("unknown command")
                 },
                 EvtType::Response(_resp) => {
@@ -71,4 +73,25 @@ fn handle_join_topic(cmd: &str, peer: &mut Peer){
     peer.join_topic(rest);
 
     info!("joined topic {} added!", rest);
+}
+
+fn handle_list_messages(peer: &Peer){
+    peer.messages
+        .iter()
+        .for_each(|msg| info!("{:?}", msg));
+}
+
+/// Create a new message 
+fn handle_create_message(cmd: &str, peer: &mut Peer){
+    let rest = cmd.strip_prefix("create m ").expect("invalid command");
+    let elements: Vec<&str> = rest.split(" ").collect();
+
+    if elements.len() < 2 {
+        info!("Too few arguments - format topic|message");
+    }else{
+        let topic = elements.get(0).expect("can get a topic");
+        let message = &elements[1..].join(" ");
+
+        peer.send_message(topic, message);
+    }
 }
