@@ -12,8 +12,21 @@ enum EvtType {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     pretty_env_logger::init();
     info!("Welcome to peer chat. ");
+    let mut name = "shaddy shad".to_string();
 
-    let mut peer = Peer::new("shaddy shad");
+    if let Some(n) = std::env::args().nth(1){
+        name = n;
+    }
+
+    let mut peer = Peer::new(&name);
+    peer.connect();
+    peer.conn_status();
+
+
+    if let Some(to_dial) = std::env::args().nth(2){
+        info!("Dialed {:?}", to_dial);
+        peer.dial(to_dial);
+    }
 
     
     info!("PeerId: {}", peer.get_id());
@@ -21,7 +34,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut stdin = BufReader::new(stdin()).lines();
 
-    peer.connect();
+    
 
     loop {
         let evt = tokio::select! {
