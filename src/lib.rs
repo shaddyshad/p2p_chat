@@ -1,12 +1,11 @@
-use libp2p::{Multiaddr, NetworkBehaviour, PeerId, Transport, core::upgrade, floodsub::{Floodsub, FloodsubConfig, FloodsubEvent, Topic}, identity, mdns::{Mdns, TokioMdns, MdnsEvent}, noise::{Keypair, X25519Spec, NoiseConfig}, swarm::{NetworkBehaviourEventProcess, SwarmBuilder, Swarm}, tcp::TokioTcpConfig, yamux::YamuxConfig};
+use libp2p::{Multiaddr, NetworkBehaviour, PeerId, floodsub::{Floodsub, FloodsubConfig, FloodsubEvent, Topic}, identity, mdns::{Mdns, TokioMdns, MdnsEvent}, noise::{Keypair, X25519Spec, NoiseConfig}, swarm::{NetworkBehaviourEventProcess, SwarmBuilder, Swarm}, tcp::TokioTcpConfig, yamux::YamuxConfig};
 
 use tokio::{sync::mpsc};
-use log::{info, error};
+use log::{info};
 use std::time::SystemTime;
 use serde::{Serialize, Deserialize};
 use uuid::Uuid;
 
-type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync + 'static>>;
 
 // a message that can be exchanged between peers 
 #[derive(Debug, Serialize, Deserialize)]
@@ -71,7 +70,7 @@ impl NetworkBehaviourEventProcess<MdnsEvent> for ChatBehavior {
                     self.floodsub.add_node_to_partial_view(peer);
                 }
             }
-            _ => ()
+            
         }
     }
 }
@@ -98,19 +97,8 @@ impl Peer {
         // create a stream channel 
         let (sender, receiver) = mpsc::unbounded_channel();
 
-        let auth_keys = Keypair::<X25519Spec>::new()
-            .into_authentic(&keys)
-            .expect("can create auth keys");
+        let transport = libp2p::build_development_transport(keys).expect("can build a transport");
 
-        // authenticate with noise 
-        let noise = NoiseConfig::xx(auth_keys).into_authenticated();
-        let yamux = YamuxConfig::default();
-
-        let transport = TokioTcpConfig::new()
-            .upgrade(upgrade::Version::V1)
-            .authenticate(noise)
-            .multiplex(yamux)
-            .boxed();
 
         let behavior = ChatBehavior {
             floodsub: Floodsub::from_config(FloodsubConfig{local_peer_id: peer_id.clone(), subscribe_local_messages: true}),
@@ -132,7 +120,7 @@ impl Peer {
             name: name.to_string(),
             messages: vec![],
             swarm,
-            addr: "/ip4/0.0.0.0/tcp/0".parse().expect("can parse address to multiaddress"),
+            addr: "/ip4/0.0.0.0/tcp/5050".parse().expect("can parse address to multiaddress"),
             receiver
         }
     }
@@ -167,6 +155,14 @@ impl Peer {
         Swarm::listen_on(
             &mut self.swarm, self.addr.clone()
         ).expect("swarm can be started");
+
+    }
+
+    // Print connection status 
+    pub fn conn_status(&self){  
+        for addr in Swarm::listeners(&self.swarm){
+            info!("Listening on {:?}", addr);
+        }
     }
 
     /// get the peer id 
@@ -184,6 +180,14 @@ impl Peer {
 
         self.messages.push(message);
         info!("Message sent");
+    }
+
+
+    /// Dial another node
+    pub fn dial(&mut self, dial: String) {
+        let addr: Multiaddr = dial.parse().expect("can convert to multi address");
+
+        Swarm::dial_addr(&mut self.swarm, addr).expect("cannot dial user");
     }
 
 }
