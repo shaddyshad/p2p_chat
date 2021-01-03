@@ -2,12 +2,12 @@ extern crate peer_chat;
 use log::{info};
 
 
-use peer_chat::{Peer, storage::MemoryStorage, Subscriptions, Group};
+use peer_chat::{Peer, storage::MemoryStorage, Subscriber, Group};
 
 // stub subscriptions 
 struct DummySubscriptions;
 
-impl Subscriptions for DummySubscriptions {
+impl Subscriber for DummySubscriptions {
     fn subscribe(&mut self, peer_id: &str, topic: &str) -> bool {
         info!("{} subscribed to {}", peer_id, topic);
 

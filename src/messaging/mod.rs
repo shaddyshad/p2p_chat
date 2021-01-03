@@ -1,8 +1,8 @@
-pub mod subscriptions;
+pub mod pubsub;
 pub mod groups;
 
 pub use groups::{NewGroup, Group};
-use subscriptions::{Subscriptions};
+pub use pubsub::{Subscriber, Publisher};
 use super::storage::{Storage};
 
 /// A peer is the main actor in the messaging system 
@@ -23,15 +23,15 @@ impl Peer {
 
 
     /// Create a new group 
-    pub fn new_group<S: , M>(&self, group_name: String, storage: S, subscriptions: M) -> NewGroup<S, M>
+    pub fn new_group<S: , M>(&self, group_name: String, storage: S, subscriber: M) -> NewGroup<S, M>
     where 
         S: Storage<Item=Group>,
-        M: Subscriptions
+        M: Subscriber
     {
         NewGroup {
             group_name,
             storage,
-            subscriptions,
+            subscriber,
             peer_id: self.peer_id.clone()
         }
     }
@@ -49,10 +49,10 @@ mod tests {
         Peer::new("ank3r".to_string(), "shaddyshad".to_string())
     }
 
-    // stub subscriptions 
+    // stub Subscriber 
     struct Subs;
 
-    impl Subscriptions for Subs {
+    impl Subscriber for Subs {
         fn subscribe(&mut self, peer_id: &str, topic: &str) -> bool {
             info!("{} subscribed to {}", peer_id, topic);
 

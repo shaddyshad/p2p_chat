@@ -1,6 +1,5 @@
-use super::Group;
+use super::{Group, Subscriber};
 use crate::{storage::{Storage, QueryPredicate}, Result};
-use super::super::subscriptions::Subscriptions;
 
 /// Query to check for matches in group name 
 struct GroupNameQuery<'a>(&'a str);
@@ -12,15 +11,15 @@ impl<'a> QueryPredicate<Group> for GroupNameQuery<'a> {
 }
 
 /// Provides facilities to build a new group chat 
-pub struct NewGroup<T: Storage<Item=Group>, S: Subscriptions> {
+pub struct NewGroup<T: Storage<Item=Group>, S: Subscriber> {
     pub group_name: String,
     pub peer_id: String,
     pub storage: T,
-    pub subscriptions: S,
+    pub subscriber: S,
 }
 
 
-impl <T:Storage<Item=Group>, S: Subscriptions> NewGroup<T, S>{
+impl <T:Storage<Item=Group>, S: Subscriber> NewGroup<T, S>{
     ///  create a new group from the given data and save it 
     /// to the storage instance provided
     pub fn save(&mut self) -> Result<()>{
@@ -37,7 +36,7 @@ impl <T:Storage<Item=Group>, S: Subscriptions> NewGroup<T, S>{
             self.save().expect("can save group to storage");
         }
 
-        self.subscriptions.subscribe(&self.peer_id, &self.group_name)
+        self.subscriber.subscribe(&self.peer_id, &self.group_name)
         
     }
 
@@ -52,7 +51,7 @@ impl <T:Storage<Item=Group>, S: Subscriptions> NewGroup<T, S>{
 
     /// Unsubscribe from this group 
     pub fn unsubscribe(&mut self) -> bool {
-        self.subscriptions.unsubscribe(&self.peer_id, &self.group_name)
+        self.subscriber.unsubscribe(&self.peer_id, &self.group_name)
     }
 
 }

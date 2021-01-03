@@ -2,6 +2,8 @@ use uuid::Uuid;
 pub mod new_group;
 use std::time::SystemTime;
 
+pub use super::Subscriber;
+
 pub use new_group::NewGroup;
 /// Representation of a group chat 
 #[derive(Debug, Clone)]
