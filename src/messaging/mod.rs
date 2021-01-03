@@ -1,9 +1,11 @@
 pub mod pubsub;
 pub mod groups;
+pub mod messages;
 
 pub use groups::{NewGroup, Group};
 pub use pubsub::{Subscriber, Publisher};
-use super::storage::{Storage};
+use super::storage::{Storage, QueryPredicate};
+pub use messages::{Message, NewMessage};
 
 /// A peer is the main actor in the messaging system 
 #[derive(Debug)]
@@ -23,7 +25,7 @@ impl Peer {
 
 
     /// Create a new group 
-    pub fn new_group<S: , M>(&self, group_name: String, storage: S, subscriber: M) -> NewGroup<S, M>
+    pub fn new_group<S , M>(&self, group_name: String, storage: S, subscriber: M) -> NewGroup<S, M>
     where 
         S: Storage<Item=Group>,
         M: Subscriber
@@ -33,6 +35,22 @@ impl Peer {
             storage,
             subscriber,
             peer_id: self.peer_id.clone()
+        }
+    }
+
+
+    /// Create a new message 
+    pub fn new_message<P, S>(&self, group_name: &str, message: &str, storage: S, publisher: P) -> NewMessage<P, S>
+    where 
+        P: Publisher<Message>,
+        S: Storage<Item=Message>
+    {
+        let msg = Message::new(message, &self.peer_id, &group_name);
+
+        NewMessage {
+            publisher,
+            storage,
+            message: msg.clone()
         }
     }
 }
@@ -66,6 +84,15 @@ mod tests {
         }
     }
 
+    // stub publisher 
+    struct Pub;
+
+    impl Publisher<Message> for Pub {
+        fn publish(&mut self, msg: Message) {
+            info!("{:?}", msg);
+        }
+    }
+
     #[test]
     fn test_can_create_group(){
         let peer = setup();
@@ -80,5 +107,25 @@ mod tests {
         assert!(!new_group.exists());
         new_group.subscribe();
         assert!(new_group.exists());
+    }
+
+
+    #[test]
+    fn test_can_send_msg(){
+        let peer = setup();
+
+        // deps 
+        let publisher = Pub;
+        let storage: MemoryStorage<Message> = MemoryStorage::new();
+
+
+        let mut new_msg = peer.new_message("chat001", "Hey bro, ssup", storage, publisher);
+
+        // before publishing, the message is not saved yet 
+        assert!(!new_msg.exists());
+        // afterpublishing it is saved 
+        new_msg.send();
+        assert!(new_msg.exists());
+
     }
 }

@@ -18,5 +18,5 @@ pub trait Subscriber {
 /// types should ensure that messages are delivered
 pub trait Publisher<T> {
     /// publish a message to a chat board 
-    fn publish(&mut self, source: &str, topic: &str, msg: T);
+    fn publish(&mut self, msg: T);
 }

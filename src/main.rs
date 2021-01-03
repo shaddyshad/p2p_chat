@@ -2,7 +2,7 @@ extern crate peer_chat;
 use log::{info};
 
 
-use peer_chat::{Peer, storage::MemoryStorage, Subscriber, Group};
+use peer_chat::{Peer, storage::MemoryStorage, Subscriber, Group,Publisher, Message};
 
 // stub subscriptions 
 struct DummySubscriptions;
@@ -21,6 +21,16 @@ impl Subscriber for DummySubscriptions {
     }
 }
 
+
+// dummy publisher 
+struct DummyPublisher;
+
+impl Publisher<Message> for DummyPublisher {
+    fn publish(&mut self, msg: Message) {
+        info!("message {} published", msg.id());
+    }
+}
+
 fn main() {
     pretty_env_logger::init();
     // create two a peer 
@@ -36,7 +46,17 @@ fn main() {
     // save the group by subscribing 
     new_group.subscribe();
 
+
+    // deps 
+    let publisher = DummyPublisher;
+    let msgStore: MemoryStorage<Message> = MemoryStorage::new();
+    // send amessage to the group 
+    let mut new_msg = peer.new_message("chat001", "message", msgStore, publisher);
+    new_msg.send();
+
     // finally, unsubscribe 
     new_group.unsubscribe();
+
+    
     
 }
