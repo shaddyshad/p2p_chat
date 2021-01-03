@@ -27,14 +27,14 @@ struct DummyPublisher;
 
 impl Publisher<Message> for DummyPublisher {
     fn publish(&mut self, msg: Message) {
-        info!("message {} published", msg.id());
+        info!("message {} published to {}", msg.id(), msg.group_name);
     }
 }
 
 fn main() {
     pretty_env_logger::init();
     // create two a peer 
-    let peer =  Peer::new("asdhsdf".to_string(), "ank3r".to_string());
+    let peer =  Peer::new("shaddyshad".to_string(), "ank3r".to_string());
 
     // get the sub and memory storage 
     let subscriptions = DummySubscriptions;
@@ -49,9 +49,9 @@ fn main() {
 
     // deps 
     let publisher = DummyPublisher;
-    let msgStore: MemoryStorage<Message> = MemoryStorage::new();
+    let msg_store: MemoryStorage<Message> = MemoryStorage::new();
     // send amessage to the group 
-    let mut new_msg = peer.new_message("chat001", "message", msgStore, publisher);
+    let mut new_msg = peer.new_message("chat001", "message", msg_store, publisher);
     new_msg.send();
 
     // finally, unsubscribe 

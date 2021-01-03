@@ -8,10 +8,10 @@ pub use new_message::NewMessage;
 #[derive(Debug, Clone)]
 pub struct Message {
     id: Uuid,
-    msg: String,
-    source: String,         // peer id of the sender 
+    pub msg: String,
+    pub source: String,         // peer id of the sender 
     ts: SystemTime,         // timestamp 
-    group_name: String
+    pub group_name: String
 } 
 
 
