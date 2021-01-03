@@ -5,10 +5,8 @@ use super::super::subscriptions::Subscriptions;
 /// Query to check for matches in group name 
 struct GroupNameQuery<'a>(&'a str);
 
-impl<'a> QueryPredicate for GroupNameQuery<'a> {
-    type Item = Group;
-
-    fn matches(&self, other: &Self::Item) -> bool {
+impl<'a> QueryPredicate<Group> for GroupNameQuery<'a> {
+    fn matches(&self, other: &Group) -> bool {
         self.0 == &other.name
     }
 }
@@ -50,7 +48,7 @@ impl <T:Storage<Item=Group>, S: Subscriptions> NewGroup<T, S>{
     fn exists(&self) -> bool {
         let predicate = GroupNameQuery(&self.group_name);
 
-        self.storage.find(predicate).count() > 0
+        !self.storage.find(predicate).is_empty()
     }
 
 }

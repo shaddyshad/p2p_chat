@@ -3,6 +3,7 @@ mod new_group;
 use std::time::SystemTime;
 
 /// Representation of a group chat 
+#[derive(Debug, Clone)]
 pub struct Group {
     name: String,
     id: Uuid,
