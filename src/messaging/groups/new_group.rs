@@ -17,7 +17,6 @@ pub struct NewGroup<T: Storage<Item=Group>, S: Subscriptions> {
     pub peer_id: String,
     pub storage: T,
     pub subscriptions: S,
-    pub is_published: bool 
 }
 
 
@@ -35,7 +34,7 @@ impl <T:Storage<Item=Group>, S: Subscriptions> NewGroup<T, S>{
     pub fn subscribe(&mut self) -> bool {
         if !self.exists(){
             // save it first 
-            self.save();
+            self.save().expect("can save group to storage");
         }
 
         self.subscriptions.subscribe(&self.peer_id, &self.group_name)
@@ -45,10 +44,15 @@ impl <T:Storage<Item=Group>, S: Subscriptions> NewGroup<T, S>{
     /// Check if a group has already been saved 
     /// Creates a group name query predicate and issues a find on the 
     /// storage. If the iterator returned is empty, then group is not created
-    fn exists(&self) -> bool {
+    pub fn exists(&self) -> bool {
         let predicate = GroupNameQuery(&self.group_name);
 
         !self.storage.find(predicate).is_empty()
+    }
+
+    /// Unsubscribe from this group 
+    pub fn unsubscribe(&mut self) -> bool {
+        self.subscriptions.unsubscribe(&self.peer_id, &self.group_name)
     }
 
 }

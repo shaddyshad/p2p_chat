@@ -1,7 +1,8 @@
 use uuid::Uuid;
-mod new_group;
+pub mod new_group;
 use std::time::SystemTime;
 
+pub use new_group::NewGroup;
 /// Representation of a group chat 
 #[derive(Debug, Clone)]
 pub struct Group {

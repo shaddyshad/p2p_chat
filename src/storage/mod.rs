@@ -1,5 +1,8 @@
 use super::Result;
 pub mod memory_storage;
+
+pub use memory_storage::MemoryStorage;
+
 /// A trait defining types that can provide predicate capabilities 
 /// for storage queries 
 pub trait QueryPredicate<T> {
@@ -32,9 +35,7 @@ pub trait Storage {
 
     /// Predicated remove 
     /// Returns a Result with count of the removed elements or an error 
-    fn remove_if<Q:QueryPredicate<Self::Item>>(&mut self, query: Q) -> Result<usize>{
-        Ok(0)
-    }
+    fn remove_if<Q:QueryPredicate<Self::Item>>(&mut self, query: Q) -> Result<usize>;
 
 
 }
