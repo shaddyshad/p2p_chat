@@ -3,14 +3,14 @@ use super::{Storage, QueryPredicate};
 /// Listing type provides an iterator on types in the messaging modules 
 /// Used to retrieve records from the storage for a particular user noted by the peer_id 
 #[derive(Clone)]
-pub struct Listing<T, S:Storage<Item=T>, P: QueryPredicate<T>> {
-    storage: S,
-    pred: P,
-    next: usize
+pub struct Listing<T, S:Storage<Item=T>, P: QueryPredicate<T> + Clone> {
+    pub storage: S,
+    pub pred: P,
+    pub next: usize
 }
 
 
-impl<T: Clone,S:Storage<Item=T>, P: QueryPredicate<T>> Iterator for Listing<T, S, P>{
+impl<T: Clone,S:Storage<Item=T>, P: QueryPredicate<T> + Clone> Iterator for Listing<T, S, P>{
     type Item = T;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -20,7 +20,6 @@ impl<T: Clone,S:Storage<Item=T>, P: QueryPredicate<T>> Iterator for Listing<T, S
             self.next += 1;
 
             return Some(items[self.next-1].clone())
-         
         }
 
         None

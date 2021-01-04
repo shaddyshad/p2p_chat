@@ -5,7 +5,7 @@ pub use memory_storage::MemoryStorage;
 
 /// A trait defining types that can provide predicate capabilities 
 /// for storage queries 
-pub trait QueryPredicate<T>: Clone {
+pub trait QueryPredicate<T: Sized>: Clone   {
     fn matches(&self, other: &T) -> bool;    
 }
 

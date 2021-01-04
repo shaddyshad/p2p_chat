@@ -7,6 +7,7 @@ pub use groups::{NewGroup, Group};
 pub use pubsub::{Subscriber, Publisher};
 use super::storage::{Storage, QueryPredicate};
 pub use messages::{Message, NewMessage};
+pub use listing::Listing;
 
 /// A peer is the main actor in the messaging system 
 #[derive(Debug)]
@@ -54,6 +55,8 @@ impl Peer {
             message: msg.clone()
         }
     }
+
+
 }
 
 #[cfg(test)]

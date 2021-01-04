@@ -1,6 +1,10 @@
-use uuid::Uuid;
 pub mod new_group;
+pub mod list_groups;
+
+use uuid::Uuid;
 use std::time::SystemTime;
+
+use crate::storage::{QueryPredicate};
 
 pub use super::Subscriber;
 
@@ -23,4 +27,13 @@ impl Group {
             ts: SystemTime::now()
         }
     }
+
+    /// get the peer id of the creator 
+    pub fn peer_id(&self) -> String {
+        self.creator.clone()
+    }
 }
+
+
+/// A trait for types that can list all groups a peer is subsscribed to 
+pub trait ListGroups: Iterator<Item=Group> {}

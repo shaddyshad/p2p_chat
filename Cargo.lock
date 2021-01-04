@@ -1724,6 +1724,7 @@ dependencies = [
 name = "peer_chat"
 version = "0.1.0"
 dependencies = [
+ "futures",
  "libp2p",
  "log",
  "once_cell",
