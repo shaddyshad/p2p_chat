@@ -2,6 +2,7 @@ use super::{Group, Subscriber};
 use crate::{storage::{Storage, QueryPredicate}, Result};
 
 /// Query to check for matches in group name 
+#[derive(Clone)]
 struct GroupNameQuery<'a>(&'a str);
 
 impl<'a> QueryPredicate<Group> for GroupNameQuery<'a> {

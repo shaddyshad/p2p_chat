@@ -1,6 +1,7 @@
 pub mod pubsub;
 pub mod groups;
 pub mod messages;
+pub mod listing;
 
 pub use groups::{NewGroup, Group};
 pub use pubsub::{Subscriber, Publisher};

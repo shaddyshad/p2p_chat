@@ -63,6 +63,7 @@ mod tests {
     /// create a memory 
     use super::*;
 
+    #[derive(Clone)]
     struct FindNum(u32);
 
     impl QueryPredicate<u32> for FindNum {

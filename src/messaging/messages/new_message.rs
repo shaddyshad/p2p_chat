@@ -9,6 +9,7 @@ pub struct NewMessage<P: Publisher<Message>, M: Storage<Item=Message>> {
 }
 
 /// A predicate to check if any messages exists by their id 
+#[derive(Clone)]
 struct FindById(pub Uuid);
 
 impl QueryPredicate<Message> for FindById {
