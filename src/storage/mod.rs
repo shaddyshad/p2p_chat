@@ -38,6 +38,18 @@ pub trait Storage {
     fn remove_if<Q:QueryPredicate<Self::Item>>(&mut self, query: Q) -> Result<usize>;
 
 
+    /// Find one items given a predicate 
+    fn find_one<Q:QueryPredicate<Self::Item>>(&self, query: Q) -> Option<Self::Item> {
+        let items = self.find(query);
+
+        if let Some(item) = items.into_iter().next(){
+            return Some(item)
+        }
+
+        None 
+    }
+
+
 }
 
 

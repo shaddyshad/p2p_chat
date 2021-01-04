@@ -73,7 +73,7 @@ mod tests {
 
 
     #[test]
-    fn test_save(){
+    fn can_save(){
         let mut storage: MemoryStorage<u32> = MemoryStorage::new();
         storage.save(2).expect("Can save a value");
         storage.save(3).expect("Can save a value");
@@ -82,7 +82,7 @@ mod tests {
     }
 
     #[test]
-    fn test_can_list(){
+    fn can_list(){
         let mut storage: MemoryStorage<u32> = MemoryStorage::new();
         storage.save(2).expect("Can save a value");
         storage.save(3).expect("Can save a value");
@@ -91,7 +91,7 @@ mod tests {
     }
 
     #[test]
-    fn test_can_find_num(){
+    fn can_find_num(){
         let values = setup();
 
         
@@ -106,7 +106,7 @@ mod tests {
     }
 
     #[test]
-    fn test_can_delete(){
+    fn can_delete(){
         let mut values = setup();
         assert_eq!(values.list().len(), values.remove_all().unwrap());
     }
@@ -120,6 +120,14 @@ mod tests {
         let res = values.remove_if(val).expect("can remove conditionally");
 
         assert_eq!(res, 3);
+    }
+
+    #[test]
+    fn can_find_one(){
+        let values = setup();
+        let query = FindNum(3);
+
+        assert_eq!(values.find_one(query), Some(3));
     }
 
     fn setup() -> MemoryStorage<u32>{
