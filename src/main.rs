@@ -8,7 +8,6 @@ use tokio::io::{self, AsyncBufReadExt};
 use log::{info, warn};
 use peer_chat::{Message, Event, EventEmitter, Notifier, EventListener};
 
-
 /// Notifications 
 pub struct Notifications{
     subject: String 
@@ -85,6 +84,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
     let id_keys = identity::Keypair::generate_ed25519();
     let peer_id = PeerId::from_public_key(id_keys.public());
 
+    info!("local id {}", peer_id);
 
     // create a keypair for transport 
     let noise_keys = noise::Keypair::<noise::X25519>::new()
