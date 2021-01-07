@@ -1750,6 +1750,7 @@ dependencies = [
  "serde",
  "serde_json",
  "shellexpand",
+ "termion",
  "tokio",
  "tui",
  "uuid",
