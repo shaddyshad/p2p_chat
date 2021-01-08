@@ -2,8 +2,8 @@ use termion::raw::IntoRawMode;
 use tui::{
     terminal::Terminal,
     backend::TermionBackend,
-    layout::{Layout, Constraint, Direction, Alignment,Margin},
-    widgets::{Block, Borders, BorderType, Paragraph, Wrap},
+    layout::{Layout, Constraint, Direction, Alignment},
+    widgets::{Block, Borders, BorderType, Paragraph, Wrap, List, ListItem},
     style::{Color, Style, Modifier},
     text::{Span}
 };
@@ -82,6 +82,27 @@ fn main() -> Result<(), Error>{
             .borders(Borders::TOP)
             .title("Chats");
         f.render_widget(content_block, content_area);
+
+        // divide the content area into 3 parts, 20% for topics, 10% space 70% listing
+        let content_chunks = Layout::default()
+            .margin(1)
+            .constraints([Constraint::Percentage(20), Constraint::Percentage(10), Constraint::Percentage(70)].as_ref())
+            .split(content_area);
+
+        let listing = content_chunks[0];
+        let messages = content_chunks[2];
+
+        // list some topics 
+        let topics = [ListItem::new("Chat 001"), ListItem::new("Chat 002"), ListItem::new("Chat 003"), ListItem::new("Chat 004")];
+
+        let list = List::new(topics)
+            .block(Block::default().title("Topics").borders(Borders::ALL))
+            .style(Style::default().fg(Color::White))
+            .highlight_style(Style::default().add_modifier(Modifier::ITALIC))
+            .highlight_symbol(">>");
+
+        f.render_widget(list, listing);
+
 
     })
 
